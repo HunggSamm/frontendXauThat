@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Box,
   Text,
@@ -9,11 +9,14 @@ import {
   Stack,
   Radio,
   Divider,
-  Grid,
+  Button,
 } from '@chakra-ui/react';
 
 const Reading = () => {
   const [leftWidth, setLeftWidth] = useState(50); // Percentage width of the left panel
+  const [highlightButtonVisible, setHighlightButtonVisible] = useState(false);
+  const [highlightPosition, setHighlightPosition] = useState({ top: 0, left: 0 });
+  const selectedRangeRef = useRef(null); // Store the selected range
 
   const handleDrag = (e) => {
     const newLeftWidth = (e.clientX / window.innerWidth) * 100;
@@ -22,9 +25,55 @@ const Reading = () => {
     }
   };
 
+  const handleTextSelect = () => {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const selectedText = selection.toString();
+
+      if (selectedText.trim()) {
+        // If text is selected, store the range and show the highlight button
+        selectedRangeRef.current = range;
+
+        const rect = range.getBoundingClientRect();
+        setHighlightPosition({
+          top: rect.bottom + window.scrollY,
+          left: rect.left + window.scrollX,
+        });
+        setHighlightButtonVisible(true);
+      } else {
+        setHighlightButtonVisible(false);
+      }
+    }
+  };
+
+  const handleHighlight = () => {
+    const selection = window.getSelection();
+
+    if (!selectedRangeRef.current || selection.rangeCount === 0) return;
+
+    const range = selectedRangeRef.current;
+    const selectedText = selection.toString();
+
+    if (selectedText.trim()) {
+      // Create a span element with a yellow background
+      const highlightSpan = document.createElement('span');
+      highlightSpan.style.backgroundColor = 'yellow';
+      highlightSpan.textContent = selectedText;
+
+      // Replace the selected text with the highlighted span
+      range.deleteContents();
+      range.insertNode(highlightSpan);
+
+      // Clear the selection and hide the highlight button
+      selection.removeAllRanges();
+      setHighlightButtonVisible(false);
+    }
+  };
+
   return (
-    <Flex height="100vh" padding="20px" position="relative">
-      {/* Cột bên trái - Bài đọc */}
+    <Flex height="100vh" padding="20px" position="relative" onMouseUp={handleTextSelect}>
+      {/* Left column - Reading passage */}
       <Box
         width={`${leftWidth}%`}
         overflowY="auto"
@@ -32,6 +81,8 @@ const Reading = () => {
         borderWidth="1px"
         borderRadius="lg"
         boxShadow="lg"
+        position="relative"
+        id="reading-passage"
       >
         <Heading as="h3" size="lg" mb={4}>
           PART 3
@@ -57,9 +108,24 @@ const Reading = () => {
         <Text fontSize="md" mb={4}>
           Fluoridation, when mixed with water, becomes fluoride and the desired concentration of fluoride in public water is approximately one part per million...
         </Text>
+
+        {/* Highlight Button */}
+        {highlightButtonVisible && (
+          <Button
+            position="absolute"
+            top={highlightPosition.top}
+            left={highlightPosition.left}
+            backgroundColor="yellow.300"
+            onClick={handleHighlight}
+            zIndex={2}
+            size="sm"
+          >
+            Highlight
+          </Button>
+        )}
       </Box>
 
-      {/* Thanh chia màn hình có thể kéo */}
+      {/* Resizable divider */}
       <Box
         width="3px" // Increased width for better visibility
         cursor="col-resize"
@@ -75,7 +141,7 @@ const Reading = () => {
         zIndex={1}
       />
 
-      {/* Cột bên phải - Câu hỏi và đáp án */}
+      {/* Right column - Questions and answers */}
       <Box
         width={`${100 - leftWidth}%`}
         overflowY="auto"
@@ -91,7 +157,7 @@ const Reading = () => {
           Choose the correct letter, A, B, C or D. Write the correct letter in boxes 27-31 on your answer sheet.
         </Text>
 
-        {/* Câu hỏi 27 */}
+        {/* Question 27 */}
         <Box mb={4}>
           <Text fontSize="md" fontWeight="bold" mb={2}>
             27. The optimum amount of fluoride in fluoridated water is calculated partly according to
@@ -108,7 +174,7 @@ const Reading = () => {
 
         <Divider />
 
-        {/* Câu hỏi 28 */}
+        {/* Question 28 */}
         <Box mt={4} mb={4}>
           <Text fontSize="md" fontWeight="bold" mb={2}>
             28. One reason given by the writer for opposing fluoridation is that
@@ -125,7 +191,7 @@ const Reading = () => {
 
         <Divider />
 
-        {/* Câu hỏi 29 */}
+        {/* Question 29 */}
         <Box mt={4} mb={4}>
           <Text fontSize="md" fontWeight="bold" mb={2}>
             29. The writer mentions Kuhn in order to
@@ -142,7 +208,7 @@ const Reading = () => {
 
         <Divider />
 
-        {/* Thêm các câu hỏi khác nếu cần */}
+        {/* Add more questions as needed */}
       </Box>
     </Flex>
   );
