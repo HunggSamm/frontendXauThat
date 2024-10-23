@@ -1,0 +1,154 @@
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  ChakraProvider,
+  Box,
+  HStack,
+  IconButton,
+  Button,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Text,
+  Select,
+  Spacer,
+  Image
+} from '@chakra-ui/react';
+import {
+  FaPause,
+  FaPlay,
+  FaListUl,
+  FaExpand,
+  FaPenFancy
+} from 'react-icons/fa';
+import { MdVolumeUp } from 'react-icons/md';
+import { CiPaperplane } from 'react-icons/ci';
+import { AiOutlineFileSearch } from 'react-icons/ai';
+import {
+  TbPlayerTrackPrevFilled,
+  TbPlayerTrackNextFilled
+} from 'react-icons/tb';
+
+function App() {
+  const audioRef = useRef(new Audio('https://codeskulptor-demos.commondatastorage.googleapis.com/pang/paza-moduless.mp3'));
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [volume, setVolume] = useState(0.5); // Giá trị volume từ 0 đến 1
+  const [showRemainingTime, setShowRemainingTime] = useState(false); // Để quản lý trạng thái thời gian hiển thị
+
+  useEffect(() => {
+    audioRef.current.volume = volume;
+    
+    const updateCurrentTime = () => {
+      setCurrentTime(audioRef.current.currentTime);
+    };
+
+    audioRef.current.addEventListener('timeupdate', updateCurrentTime);
+
+    return () => {
+      audioRef.current.removeEventListener('timeupdate', updateCurrentTime);
+    };
+  }, [volume]);
+
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleNext = () => {
+    audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 5);
+  };
+
+  const handlePrev = () => {
+    audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 5);
+  };
+
+  const handleVolumeChange = (value) => {
+    setVolume(value / 100);
+  };
+
+  // Định dạng thời gian hiển thị (HH:MM:SS)
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  // Hàm chuyển đổi giữa thời gian đã phát và thời gian còn lại
+  const toggleTimeDisplay = () => {
+    setShowRemainingTime(!showRemainingTime);
+  };
+
+  return (
+    <ChakraProvider>
+      <Box w="100%" p={4} bg="white" boxShadow="md">
+        {/* Top Section */}
+        <HStack spacing={4} alignItems="center">
+          {/* Left: Logo */}
+          <Image src="https://res.cloudinary.com/dnhvlncfw/image/upload/v1728881932/cld-sample-2.jpg" alt="Logo" boxSize="50px" />
+
+          <Spacer />
+            <Text fontSize="lg" fontWeight="bold">
+                35 minutes remaining
+            </Text>
+            <Spacer />
+
+          {/* Right: Action Buttons */}
+          <HStack spacing={2}>
+            <IconButton aria-label="Review" icon={<FaPenFancy />} />
+            <IconButton aria-label="Toggle List" icon={<FaListUl />} />
+            <IconButton aria-label="Expand" icon={<FaExpand />} />
+            <Button variant="outline" leftIcon={<AiOutlineFileSearch />}>Review</Button>
+            <Button colorScheme="teal" rightIcon={<CiPaperplane style={{ fontSize: '24px' }} />}>Submit</Button>
+          </HStack>
+        </HStack>
+
+        {/* Bottom Section */}
+        <HStack mt={6} spacing={4} alignItems="center">
+          {/* Control buttons */}
+          <IconButton aria-label="Rewind" icon={<TbPlayerTrackPrevFilled />} onClick={handlePrev} />
+          <IconButton aria-label={isPlaying ? "Pause" : "Play"} icon={isPlaying ? <FaPause /> : <FaPlay />} onClick={togglePlayPause} />
+          <IconButton aria-label="Forward" icon={<TbPlayerTrackNextFilled />} onClick={handleNext} />
+
+          {/* Time Display */}
+          <Text onClick={toggleTimeDisplay} cursor="pointer">
+            {showRemainingTime
+              ? `-${formatTime(audioRef.current.duration - currentTime)}` // Thời gian còn lại
+              : formatTime(currentTime)} {/* Thời gian đã phát */}
+          </Text>
+
+          <Slider aria-label="time-slider" value={currentTime} max={audioRef.current.duration || 0} onChange={(value) => {
+            audioRef.current.currentTime = value;
+            setCurrentTime(value);
+          }} flex="1">
+            <SliderTrack bg="gray.200">
+              <SliderFilledTrack bg="teal.400" />
+            </SliderTrack>
+            <SliderThumb boxSize={4} />
+          </Slider>
+
+          {/* Volume Control */}
+          <MdVolumeUp />
+          <Slider aria-label="volume-slider" defaultValue={volume * 100} onChange={handleVolumeChange} maxW="100px">
+            <SliderTrack bg="gray.200">
+              <SliderFilledTrack bg="teal.400" />
+            </SliderTrack>
+            <SliderThumb boxSize={4} />
+          </Slider>
+
+          {/* Audio Source Selector */}
+          <Select maxW="150px" defaultValue="source1">
+            <option value="source1">Source 1</option>
+            <option value="source2">Source 2</option>
+          </Select>
+        </HStack>
+      </Box>
+    </ChakraProvider>
+  );
+}
+
+export default App;
