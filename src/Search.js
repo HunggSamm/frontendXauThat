@@ -18,6 +18,7 @@ import { LuBarChart } from "react-icons/lu";
 import { TbClockHour4 } from "react-icons/tb";
 import { LuEye } from "react-icons/lu";
 import { PiStudent } from "react-icons/pi";
+import Page from './Page'
 
 const courses = [
   {
@@ -252,6 +253,8 @@ const Search = () => {
           })}
         </HStack>
       </Box>
+      <Page/>
+
     </ChakraProvider>
   );
 };
