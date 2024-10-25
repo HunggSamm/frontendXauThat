@@ -22,7 +22,7 @@ const content = '<h1><strong>Hung:</strong></h1><p>abc ok </p><p><br></p><p><br>
 
 root.render(
   <React.StrictMode>
-    <Notice />
+    <TaoKhoaHoc />
   </React.StrictMode>
 );
 

@@ -6,7 +6,7 @@ import Drip from "./Curriculum";
 import Settings from "./Curriculum";
 import Pricing from "./Curriculum";
 import FAQ from "./Curriculum";
-import Notice from "./Curriculum";
+import Notice from "./Notice";
 
 function App() {
   const [activeComponent, setActiveComponent] = useState("Curriculum");
