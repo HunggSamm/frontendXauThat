@@ -5,7 +5,7 @@ import Curriculum from "./Curriculum";
 import Drip from "./Curriculum";
 import Settings from "./Curriculum";
 import Pricing from "./Curriculum";
-import FAQ from "./Curriculum";
+import FAQ from "./Faq";
 import Notice from "./Notice";
 
 function App() {
