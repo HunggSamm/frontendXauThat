@@ -15,12 +15,13 @@ import SingleChoice from './SingleChoice';
 import MultipleChoice from './MultipleChoice';
 import Mapping from './Mapping';
 import TrueFalse from './TrueFalse';
+import TaoKhoaHoc from './TaoKhoaHoc'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const content = '<h1><strong>Hung:</strong></h1><p>abc ok </p><p><br></p><p><br></p>';
 
 root.render(
   <React.StrictMode>
-    <Test />
+    <TaoKhoaHoc />
   </React.StrictMode>
 );
 
