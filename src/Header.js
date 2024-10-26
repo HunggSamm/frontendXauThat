@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   ChakraProvider,
   Box,
-  HStack,
+  SimpleGrid,
   IconButton,
   Button,
   Slider,
@@ -12,7 +12,8 @@ import {
   Text,
   Select,
   Spacer,
-  Image
+  Image,
+  HStack
 } from '@chakra-ui/react';
 import {
   FaPause,
@@ -24,6 +25,7 @@ import {
 import { MdVolumeUp } from 'react-icons/md';
 import { CiPaperplane } from 'react-icons/ci';
 import { AiOutlineFileSearch } from 'react-icons/ai';
+import { TfiAlarmClock } from "react-icons/tfi";
 import {
   TbPlayerTrackPrevFilled,
   TbPlayerTrackNextFilled
@@ -87,25 +89,22 @@ function App() {
     <ChakraProvider>
       <Box w="100%" p={4} bg="white" boxShadow="md">
         {/* Top Section */}
-        <HStack spacing={4} alignItems="center">
+        <SimpleGrid columns={3} spacing={4} alignItems="center">
           {/* Left: Logo */}
           <Image src="https://res.cloudinary.com/dnhvlncfw/image/upload/v1728881932/cld-sample-2.jpg" alt="Logo" boxSize="50px" />
-
-          <Spacer />
-            <Text fontSize="lg" fontWeight="bold">
-                35 minutes remaining
-            </Text>
-            <Spacer />
+          <Text fontSize="lg" fontWeight="bold" textAlign="center">
+            35 minutes remaining
+          </Text>
 
           {/* Right: Action Buttons */}
-          <HStack spacing={2}>
-            <IconButton aria-label="Review" icon={<FaPenFancy />} />
-            <IconButton aria-label="Toggle List" icon={<FaListUl />} />
-            <IconButton aria-label="Expand" icon={<FaExpand />} />
-            <Button variant="outline" leftIcon={<AiOutlineFileSearch />}>Review</Button>
-            <Button colorScheme="teal" rightIcon={<CiPaperplane style={{ fontSize: '24px' }} />}>Submit</Button>
-          </HStack>
-        </HStack>
+          <Box textAlign="right">
+            <IconButton aria-label="Review" icon={<FaPenFancy />} backgroundColor="transparent" />
+            <IconButton aria-label="Toggle List" icon={<FaListUl />} backgroundColor="transparent" />
+            <IconButton aria-label="Expand" icon={<FaExpand />} backgroundColor="transparent" />
+            <Button variant="outline" leftIcon={<AiOutlineFileSearch />} backgroundColor="transparent" border="none">Review</Button>
+            <Button colorScheme="teal" rightIcon={<CiPaperplane style={{ fontSize: '24px' }} />} >Submit</Button>
+          </Box>
+        </SimpleGrid>
 
         {/* Bottom Section */}
         <HStack mt={6} spacing={4} alignItems="center">

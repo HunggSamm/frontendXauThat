@@ -10,13 +10,16 @@ function Footer() {
 
   return (
     <ChakraProvider>
-      <Box w="100%" p={4} bg="white" boxShadow="md" borderRadius="md">
-        <SimpleGrid columns={4} spacing={4}>
+      <Box w="100%" p={4} bg="white" boxShadow="md" borderRadius="md" position="sticky"  // Fix the footer position
+        bottom="0"        // Stick it to the bottom
+        left="0"
+        zIndex="1000"   >
+        <SimpleGrid columns={4} spacing="5px">
           {/* Part 1 */}
           <VStack
             spacing={2}
-            p={4} // Tăng padding lên
-            h="70px" // Có thể thêm chiều cao cố định
+            p={4}
+            h="65px"
             border="2px"
             borderColor="teal.400"
             borderRadius="md"
@@ -30,10 +33,12 @@ function Footer() {
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                     <Button
                       key={num}
-                      size="sm"
+                      size="sm" // Set kích thước đồng nhất cho tất cả các button
                       borderRadius="full"
                       variant="outline"
                       colorScheme="teal"
+                      w="26px"
+                      h="30px"
                     >
                       {num}
                     </Button>
@@ -50,8 +55,8 @@ function Footer() {
           {/* Part 2 */}
           <VStack
             spacing={2}
-            p={4} // Tăng padding lên
-            h="70px" // Có thể thêm chiều cao cố định
+            p={4}
+            h="65px"
             border="2px"
             borderColor="teal.400"
             borderRadius="md"
@@ -69,6 +74,8 @@ function Footer() {
                       borderRadius="full"
                       variant="outline"
                       colorScheme="teal"
+                      w="26px"
+                      h="30px"
                     >
                       {num}
                     </Button>
@@ -85,8 +92,8 @@ function Footer() {
           {/* Part 3 */}
           <VStack
             spacing={2}
-            p={4} // Tăng padding lên
-            h="70px" // Có thể thêm chiều cao cố định
+            p={4}
+            h="65px"
             border="2px"
             borderColor="teal.400"
             borderRadius="md"
@@ -104,6 +111,8 @@ function Footer() {
                       borderRadius="full"
                       variant="outline"
                       colorScheme="teal"
+                      w="26px"
+                      h="30px"
                     >
                       {num}
                     </Button>
@@ -120,8 +129,8 @@ function Footer() {
           {/* Part 4 */}
           <VStack
             spacing={2}
-            p={4} // Tăng padding lên
-            h="70px" // Có thể thêm chiều cao cố định
+            p={4}
+            h="65px"
             border="2px"
             borderColor="teal.400"
             borderRadius="md"
@@ -139,6 +148,8 @@ function Footer() {
                       borderRadius="full"
                       variant="outline"
                       colorScheme="teal"
+                      w="26px"
+                      h="30px"
                     >
                       {num}
                     </Button>

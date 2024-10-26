@@ -2,18 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import Search from './Filter';
+import Search from './Search';
 import SideBar from './SideBar';
 import Page from './Page'
 import ListeningTest from './ListeningTest';
 import Footer from './FooterReading';
-import Part1 from './Part4'
+import Header from './Header';
+import Part1 from './Part2'
 import Reading from './ReadingTest';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <React.StrictMode>
-    <Reading />
+  <React.StrictMode >
+    <Search />
   </React.StrictMode>
 );
 

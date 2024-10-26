@@ -5,18 +5,22 @@ import {
   Flex,
   Heading,
   Image,
-  RadioGroup,
-  Stack,
-  Radio,
   Divider,
   Button,
+  IconButton,
+  Icon,
+  VStack,
+  ChakraProvider
 } from '@chakra-ui/react';
+import { BsEraserFill } from "react-icons/bs";
+import { FaHighlighter } from "react-icons/fa";
+import SingleChoiceQuestion from './SingleChoiceQuestion';  // Import the component
 
 const Reading = () => {
-  const [leftWidth, setLeftWidth] = useState(50); // Percentage width of the left panel
+  const [leftWidth, setLeftWidth] = useState(50);
   const [highlightButtonVisible, setHighlightButtonVisible] = useState(false);
   const [highlightPosition, setHighlightPosition] = useState({ top: 0, left: 0 });
-  const selectedRangeRef = useRef(null); // Store the selected range
+  const selectedRangeRef = useRef(null);
 
   const handleDrag = (e) => {
     const newLeftWidth = (e.clientX / window.innerWidth) * 100;
@@ -32,7 +36,6 @@ const Reading = () => {
       const selectedText = selection.toString();
 
       if (selectedText.trim()) {
-        // If text is selected, store the range and show the highlight button
         selectedRangeRef.current = range;
 
         const rect = range.getBoundingClientRect();
@@ -54,163 +57,169 @@ const Reading = () => {
 
     const range = selectedRangeRef.current;
     const selectedText = selection.toString();
+    const parentNode = range.commonAncestorContainer.parentNode;
 
-    if (selectedText.trim()) {
-      // Create a span element with a yellow background
+    if (parentNode.tagName === 'SPAN' && parentNode.style.backgroundColor === 'yellow') {
+      parentNode.replaceWith(document.createTextNode(parentNode.textContent));
+      setHighlightButtonVisible(false);
+    } else {
       const highlightSpan = document.createElement('span');
       highlightSpan.style.backgroundColor = 'yellow';
       highlightSpan.textContent = selectedText;
 
-      // Replace the selected text with the highlighted span
       range.deleteContents();
       range.insertNode(highlightSpan);
 
-      // Clear the selection and hide the highlight button
       selection.removeAllRanges();
       setHighlightButtonVisible(false);
     }
   };
 
+  // Reading questions data (similar to Part 2 format)
+  const questionsData = [
+    {
+      question: "The optimum amount of fluoride in fluoridated water is calculated partly according to",
+      options: [
+        { value: "A", label: "A. how hot the area is." },
+        { value: "B", label: "B. how warm the water is." },
+        { value: "C", label: "C. how many dental problems there are in the community." },
+        { value: "D", label: "D. how much fluoride the community chooses to have in its water." }
+      ],
+      questionNumber: 27,
+    },
+    {
+      question: "One reason given by the writer for opposing fluoridation is that",
+      options: [
+        { value: "A", label: "A. it may contribute to tooth decay." },
+        { value: "B", label: "B. it will be unacceptably expensive for the public." },
+        { value: "C", label: "C. obligatory fluoridation takes away personal freedom." },
+        { value: "D", label: "D. excessive fluoride could be added to the water by mistake." }
+      ],
+      questionNumber: 28,
+    },
+    {
+      question: "The writer mentions Kuhn in order to",
+      options: [
+        { value: "A", label: "A. provide a contrast with the view of Collins." },
+        { value: "B", label: "B. support the rational nature of scientific inquiry." },
+        { value: "C", label: "C. demonstrate that Kuhn did not argue his case adequately." },
+        { value: "D", label: "D. show that science can be influenced by non-scientific considerations." }
+      ],
+      questionNumber: 29,
+    }
+  ];
+
   return (
-    <Flex height="100vh" padding="20px" position="relative" onMouseUp={handleTextSelect}>
-      {/* Left column - Reading passage */}
-      <Box
-        width={`${leftWidth}%`}
-        overflowY="auto"
-        padding="20px"
-        borderWidth="1px"
-        borderRadius="lg"
-        boxShadow="lg"
-        position="relative"
-        id="reading-passage"
-      >
-        <Heading as="h3" size="lg" mb={4}>
-          PART 3
-        </Heading>
-        <Heading as="h4" size="md" mb={2}>
-          READING PASSAGE 3
-        </Heading>
-        <Text fontSize="lg" mb={4}>
-          You should spend about 20 minutes on Questions 27-40, which are based on Reading Passage 3 below.
-        </Text>
-        <Image
-          src="https://res.cloudinary.com/dnhvlncfw/image/upload/v1728881932/cld-sample-3.jpg"
-          alt="Reading Passage Image"
-          width="100%"
-          mb={4}
+    <ChakraProvider>
+      <Flex height="100vh" padding="0px" position="relative" onMouseUp={handleTextSelect}>
+        <Box
+          width={`${leftWidth}%`}
+          overflowY="auto"
+          padding="20px"
+          borderWidth="1px"
+          borderRadius="lg"
+          boxShadow="lg"
+          position="relative"
+          id="reading-passage"
+        >
+          <Heading as="h3" size="lg" mb={4}>
+            PART 3
+          </Heading>
+          <Heading as="h4" size="md" mb={2}>
+            READING PASSAGE 3
+          </Heading>
+          <Text fontSize="lg" mb={4}>
+            You should spend about 20 minutes on Questions 27-40, which are based on Reading Passage 3 below.
+          </Text>
+          <Image
+            src="https://res.cloudinary.com/dnhvlncfw/image/upload/v1728881932/cld-sample-3.jpg"
+            alt="Reading Passage Image"
+            width="100%"
+            mb={4}
+          />
+          <Heading as="h5" size="lg" mb={4}>
+            The fluoridation controversy
+          </Heading>
+          <Text fontSize="md" mb={4}>
+            The long-standing debate about whether to fluoridate our drinking water continues. Fluoridation is the addition of fluoride to public water supplies with the aim of reducing tooth decay...
+          </Text>
+
+          {highlightButtonVisible && (
+            <IconButton
+              aria-label={
+                selectedRangeRef.current?.commonAncestorContainer?.parentNode?.style?.backgroundColor === 'yellow'
+                  ? 'Remove Highlight'
+                  : 'Highlight'
+              }
+              icon={
+                selectedRangeRef.current?.commonAncestorContainer?.parentNode?.style?.backgroundColor === 'yellow' ? (
+                  <Icon as={BsEraserFill} />
+                ) : (
+                  <Icon as={FaHighlighter} />
+                )
+              }
+              colorScheme="yellow"
+              border="none"
+              backgroundColor="transparent"
+              color="teal"
+              variant="ghost"
+              position="absolute"
+              top={highlightPosition.top}
+              left={highlightPosition.left}
+              zIndex={2}
+              size="sm"
+              onClick={handleHighlight}
+            />
+          )}
+        </Box>
+
+        <Box
+          width="3px"
+          cursor="col-resize"
+          backgroundColor="#808080"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            document.addEventListener('mousemove', handleDrag);
+            document.addEventListener('mouseup', () => {
+              document.removeEventListener('mousemove', handleDrag);
+            });
+          }}
+          _hover={{ bg: 'gray.500' }}
+          zIndex={1}
         />
-        <Heading as="h5" size="lg" mb={4}>
-          The fluoridation controversy
-        </Heading>
-        <Text fontSize="md" mb={4}>
-          The long-standing debate about whether to fluoridate our drinking water continues. Fluoridation is the addition of fluoride to public water supplies with the aim of reducing tooth decay...
-        </Text>
-        <Text fontSize="md" mb={4}>
-          Fluoridation, when mixed with water, becomes fluoride and the desired concentration of fluoride in public water is approximately one part per million...
-        </Text>
 
-        {/* Highlight Button */}
-        {highlightButtonVisible && (
-          <Button
-            position="absolute"
-            top={highlightPosition.top}
-            left={highlightPosition.left}
-            backgroundColor="yellow.300"
-            onClick={handleHighlight}
-            zIndex={2}
-            size="sm"
-          >
-            Highlight
-          </Button>
-        )}
-      </Box>
-
-      {/* Resizable divider */}
-      <Box
-        width="3px" // Increased width for better visibility
-        cursor="col-resize"
-        backgroundColor="#808080"
-        onMouseDown={(e) => {
-          e.preventDefault();
-          document.addEventListener('mousemove', handleDrag);
-          document.addEventListener('mouseup', () => {
-            document.removeEventListener('mousemove', handleDrag);
-          });
-        }}
-        _hover={{ bg: 'gray.500' }} // Add hover effect for visibility
-        zIndex={1}
-      />
-
-      {/* Right column - Questions and answers */}
-      <Box
-        width={`${100 - leftWidth}%`}
-        overflowY="auto"
-        padding="20px"
-        borderWidth="1px"
-        borderRadius="lg"
-        boxShadow="lg"
-      >
-        <Heading as="h4" size="md" mb={4}>
-          Questions 27-31
-        </Heading>
-        <Text fontSize="md" mb={4}>
-          Choose the correct letter, A, B, C or D. Write the correct letter in boxes 27-31 on your answer sheet.
-        </Text>
-
-        {/* Question 27 */}
-        <Box mb={4}>
-          <Text fontSize="md" fontWeight="bold" mb={2}>
-            27. The optimum amount of fluoride in fluoridated water is calculated partly according to
+        <Box
+          width={`${100 - leftWidth}%`}
+          overflowY="auto"
+          padding="20px"
+          borderWidth="1px"
+          borderRadius="lg"
+          boxShadow="lg"
+        >
+          <Heading as="h4" size="md" mb={4}>
+            Questions 27-31
+          </Heading>
+          <Text fontSize="md" mb={4}>
+            Choose the correct letter, A, B, C or D. Write the correct letter in boxes 27-31 on your answer sheet.
           </Text>
-          <RadioGroup>
-            <Stack spacing={2}>
-              <Radio value="A">how hot the area is.</Radio>
-              <Radio value="B">how warm the water is.</Radio>
-              <Radio value="C">how many dental problems there are in the community.</Radio>
-              <Radio value="D">how much fluoride the community chooses to have in its water.</Radio>
-            </Stack>
-          </RadioGroup>
+
+          {/* Render questions using SingleChoiceQuestion */}
+          <VStack spacing={6} align="start">
+            {questionsData.map((data) => (
+              <SingleChoiceQuestion
+                key={data.questionNumber}
+                questionNumber={data.questionNumber}
+                question={data.question}
+                options={data.options}
+              />
+            ))}
+          </VStack>
+
+          <Divider mt={6} />
+
         </Box>
-
-        <Divider />
-
-        {/* Question 28 */}
-        <Box mt={4} mb={4}>
-          <Text fontSize="md" fontWeight="bold" mb={2}>
-            28. One reason given by the writer for opposing fluoridation is that
-          </Text>
-          <RadioGroup>
-            <Stack spacing={2}>
-              <Radio value="A">it may contribute to tooth decay.</Radio>
-              <Radio value="B">it will be unacceptably expensive for the public.</Radio>
-              <Radio value="C">obligatory fluoridation takes away personal freedom.</Radio>
-              <Radio value="D">excessive fluoride could be added to the water by mistake.</Radio>
-            </Stack>
-          </RadioGroup>
-        </Box>
-
-        <Divider />
-
-        {/* Question 29 */}
-        <Box mt={4} mb={4}>
-          <Text fontSize="md" fontWeight="bold" mb={2}>
-            29. The writer mentions Kuhn in order to
-          </Text>
-          <RadioGroup>
-            <Stack spacing={2}>
-              <Radio value="A">provide a contrast with the view of Collins.</Radio>
-              <Radio value="B">support the rational nature of scientific inquiry.</Radio>
-              <Radio value="C">demonstrate that Kuhn did not argue his case adequately.</Radio>
-              <Radio value="D">show that science can be influenced by non-scientific considerations.</Radio>
-            </Stack>
-          </RadioGroup>
-        </Box>
-
-        <Divider />
-
-        {/* Add more questions as needed */}
-      </Box>
-    </Flex>
+      </Flex>
+    </ChakraProvider>
   );
 };
 

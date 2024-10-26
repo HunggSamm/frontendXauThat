@@ -5,15 +5,63 @@ import {
   VStack,
   HStack,
   Text,
-  RadioGroup,
-  Radio,
   Button,
   Icon,
   Select,
 } from "@chakra-ui/react";
 import { FaHeadphones } from 'react-icons/fa';
+import SingleChoiceQuestion from './SingleChoiceQuestion'; // Import the new component
 
 function Part2() {
+  // Fake data for questions 11-15
+  const questionsData = [
+    {
+      question: "The company deals mostly with:",
+      options: [
+        { value: "A", label: "A. Big cities." },
+        { value: "B", label: "B. Nature holidays." },
+        { value: "C", label: "C. Nepal." },
+      ],
+      questionNumber: 11,
+    },
+    {
+      question: "The overseas consultants deal mostly with:",
+      options: [
+        { value: "A", label: "A. Asia" },
+        { value: "B", label: "B. North America" },
+        { value: "C", label: "C. Europe" },
+      ],
+      questionNumber: 12,
+    },
+    {
+      question: "For deserts and gorges, customers should come in the:",
+      options: [
+        { value: "A", label: "A. Morning." },
+        { value: "B", label: "B. Afternoon." },
+        { value: "C", label: "C. Night." },
+      ],
+      questionNumber: 13,
+    },
+    {
+      question: "Trips to regional locations are good because:",
+      options: [
+        { value: "A", label: "A. The buses are comfortable." },
+        { value: "B", label: "B. There is storage for suitcases." },
+        { value: "C", label: "C. They can be seen quickly." },
+      ],
+      questionNumber: 14,
+    },
+    {
+      question: "Trips to regional locations are good because:",
+      options: [
+        { value: "A", label: "A. The buses are comfortable." },
+        { value: "B", label: "B. There is storage for suitcases." },
+        { value: "C", label: "C. They can be seen quickly." },
+      ],
+      questionNumber: 15,
+    },
+  ];
+
   return (
     <ChakraProvider>
       <Box w="100%" p={6} bg="white" boxShadow="lg" borderRadius="md">
@@ -33,64 +81,20 @@ function Part2() {
             </Button>
           </HStack>
 
-          <Text>Choose the correct letter, <Text as="span" fontWeight="bold">A, B, or C</Text>.</Text>
+          <Text>
+            Choose the correct letter, <Text as="span" fontWeight="bold">A, B, or C</Text>.
+          </Text>
 
-          {/* Questions 11-15 */}
+          {/* Map through questionsData to render SingleChoiceQuestion */}
           <VStack align="start" spacing={6} pt={4}>
-            <Box>
-              <Text fontWeight="bold">11. The company deals mostly with:</Text>
-              <RadioGroup>
-                <VStack align="start">
-                  <Radio value="A">A. Big cities.</Radio>
-                  <Radio value="B">B. Nature holidays.</Radio>
-                  <Radio value="C">C. Nepal.</Radio>
-                </VStack>
-              </RadioGroup>
-            </Box>
-
-            <Box>
-              <Text fontWeight="bold">12. The overseas consultants deal mostly with:</Text>
-              <RadioGroup>
-                <VStack align="start">
-                  <Radio value="A">A. Asia</Radio>
-                  <Radio value="B">B. North America</Radio>
-                  <Radio value="C">C. Europe</Radio>
-                </VStack>
-              </RadioGroup>
-            </Box>
-
-            <Box>
-              <Text fontWeight="bold">13. For deserts and gorges, customers should come in the:</Text>
-              <RadioGroup>
-                <VStack align="start">
-                  <Radio value="A">A. Morning.</Radio>
-                  <Radio value="B">B. Afternoon.</Radio>
-                  <Radio value="C">C. Night.</Radio>
-                </VStack>
-              </RadioGroup>
-            </Box>
-
-            <Box>
-              <Text fontWeight="bold">14. Trips to regional locations are good because:</Text>
-              <RadioGroup>
-                <VStack align="start">
-                  <Radio value="A">A. The buses are comfortable.</Radio>
-                  <Radio value="B">B. There is storage for suitcases.</Radio>
-                  <Radio value="C">C. They can be seen quickly.</Radio>
-                </VStack>
-              </RadioGroup>
-            </Box>
-
-            <Box>
-              <Text fontWeight="bold">15. Trips to regional locations are good because:</Text>
-              <RadioGroup>
-                <VStack align="start">
-                  <Radio value="A">A. The buses are comfortable.</Radio>
-                  <Radio value="B">B. There is storage for suitcases.</Radio>
-                  <Radio value="C">C. They can be seen quickly.</Radio>
-                </VStack>
-              </RadioGroup>
-            </Box>
+            {questionsData.map((data) => (
+              <SingleChoiceQuestion
+                key={data.questionNumber}
+                question={data.question}
+                options={data.options}
+                questionNumber={data.questionNumber}
+              />
+            ))}
           </VStack>
 
           {/* Questions 16-20 Header */}

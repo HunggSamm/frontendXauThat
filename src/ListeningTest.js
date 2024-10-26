@@ -5,14 +5,14 @@ import {
 
 import Header from './Header'
 import Footer from './Footer';
-import Part1 from './Part1';
+import Part2 from './Part2';
 const ListeningTest = () => {
-  
+
   return (
     <ChakraProvider>
-        <Header/>
-        <Part1/>
-        <Footer/>
+      <Header />
+      <Part2 />
+      <Footer />
     </ChakraProvider>
   );
 };
