@@ -9,14 +9,15 @@ import Part3 from './Part3';
 import Part4 from './Part4';
 
 const ListeningTest = () => {
-  const [activePart, setActivePart] = useState(null);
+  const [activePart, setActivePart] = useState('part1');
+  const [scrollToQuestion, setScrollToQuestion] = useState(null);
 
   const renderPartComponent = () => {
     switch (activePart) {
       case 'part1':
         return <Part1 />;
       case 'part2':
-        return <Part2 />;
+        return <Part2 scrollToQuestion={scrollToQuestion} />;
       case 'part3':
         return <Part3 />;
       case 'part4':
@@ -30,7 +31,11 @@ const ListeningTest = () => {
     <ChakraProvider>
       <Header />
       {renderPartComponent()}
-      <Footer activePart={activePart} setActivePart={setActivePart} />
+      <Footer 
+        activePart={activePart} 
+        setActivePart={setActivePart} 
+        setScrollToQuestion={setScrollToQuestion} // Add this to Footer
+      />
     </ChakraProvider>
   );
 };

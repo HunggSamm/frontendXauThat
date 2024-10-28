@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   ChakraProvider,
   Box,
@@ -10,10 +10,9 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { FaHeadphones } from 'react-icons/fa';
-import SingleChoiceQuestion from './SingleChoiceQuestion'; // Import the new component
+import SingleChoiceQuestion from './SingleChoiceQuestion';
 
-function Part2() {
-  // Fake data for questions 11-15
+function Part2({ scrollToQuestion }) {
   const questionsData = [
     {
       question: "The company deals mostly with:",
@@ -60,18 +59,38 @@ function Part2() {
       ],
       questionNumber: 15,
     },
+    // Thêm các câu hỏi khác
   ];
+
+  const questionRefs = useRef([]);
+  const questionRefs16To20 = useRef([]); // Ref cho các câu hỏi từ 16 đến 20
+
+  useEffect(() => {
+    if (scrollToQuestion) {
+      if (scrollToQuestion >= 11 && scrollToQuestion <= 15) {
+        const questionIndex = scrollToQuestion - 11;
+        if (questionRefs.current[questionIndex]) {
+          questionRefs.current[questionIndex].scrollIntoView({          behavior: "smooth", 
+            block: "center"  });
+        }
+      } else if (scrollToQuestion >= 16 && scrollToQuestion <= 20) {
+        const questionIndex = scrollToQuestion - 16;
+        if (questionRefs16To20.current[questionIndex]) {
+          questionRefs16To20.current[questionIndex].scrollIntoView({           behavior: "smooth", 
+            block: "center"  });
+        }
+      }
+    }
+  }, [scrollToQuestion]);
 
   return (
     <ChakraProvider>
       <Box w="100%" p={6} bg="white" boxShadow="lg" borderRadius="md">
-        {/* Part 2 Title */}
         <VStack align="start" spacing={4}>
           <Text fontSize="2xl" fontWeight="bold">
             Part 2
           </Text>
           
-          {/* Questions 11-15 Header */}
           <HStack spacing={4} alignItems="center">
             <Text fontSize="xl" color="teal.500" fontWeight="bold">
               Questions 11-15
@@ -85,19 +104,22 @@ function Part2() {
             Choose the correct letter, <Text as="span" fontWeight="bold">A, B, or C</Text>.
           </Text>
 
-          {/* Map through questionsData to render SingleChoiceQuestion */}
           <VStack align="start" spacing={6} pt={4}>
-            {questionsData.map((data) => (
-              <SingleChoiceQuestion
+            {questionsData.map((data, index) => (
+              <div
                 key={data.questionNumber}
-                question={data.question}
-                options={data.options}
-                questionNumber={data.questionNumber}
-              />
+                ref={(el) => (questionRefs.current[index] = el)}
+              >
+                <SingleChoiceQuestion
+                  question={data.question}
+                  options={data.options}
+                  questionNumber={data.questionNumber}
+                />
+              </div>
             ))}
           </VStack>
 
-          {/* Questions 16-20 Header */}
+          {/* Questions 16-20 */}
           <VStack align="start" pt={8} spacing={4}>
             <HStack spacing={4} alignItems="center">
               <Text fontSize="xl" color="teal.500" fontWeight="bold">
@@ -111,80 +133,24 @@ function Part2() {
             <Text>Identify the rooms in the office plan.</Text>
             <Text>Write the correct letter, <Text as="span" fontWeight="bold">A-G</Text>, next to the questions.</Text>
 
-            {/* Image of the Office Plan */}
             <Box as="img" src="https://res.cloudinary.com/dnhvlncfw/image/upload/v1728881932/cld-sample-3.jpg" alt="Office Plan" w="100%" maxW="500px" />
 
-            {/* Questions 16-20 Dropdowns */}
             <VStack align="start" spacing={4}>
-              <HStack>
-                <Text>16.</Text>
-                <Select placeholder="Select" w="100px">
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="G">G</option>
-                </Select>
-                <Text>Local Tours</Text>
-              </HStack>
-
-              <HStack>
-                <Text>17.</Text>
-                <Select placeholder="Select" w="100px">
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="G">G</option>
-                </Select>
-                <Text>Interstate Tours</Text>
-              </HStack>
-
-              <HStack>
-                <Text>18.</Text>
-                <Select placeholder="Select" w="100px">
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="G">G</option>
-                </Select>
-                <Text>International Tours</Text>
-              </HStack>
-
-              <HStack>
-                <Text>19.</Text>
-                <Select placeholder="Select" w="100px">
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="G">G</option>
-                </Select>
-                <Text>Asian Region</Text>
-              </HStack>
-
-              <HStack>
-                <Text>20.</Text>
-                <Select placeholder="Select" w="100px">
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="G">G</option>
-                </Select>
-                <Text>General Office</Text>
-              </HStack>
+              {[16, 17, 18, 19, 20].map((questionNumber, index) => (
+                <HStack key={questionNumber} ref={(el) => (questionRefs16To20.current[index] = el)}>
+                  <Text>{questionNumber}.</Text>
+                  <Select placeholder="Select" w="100px">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="G">G</option>
+                  </Select>
+                  <Text>{`Room description ${questionNumber}`}</Text>
+                </HStack>
+              ))}
             </VStack>
           </VStack>
         </VStack>
