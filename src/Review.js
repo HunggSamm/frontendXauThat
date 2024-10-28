@@ -1,14 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Text, Table, Tbody, Tr, Td } from "@chakra-ui/react";
 
-const Review = ({ answers = ["A", "B"] }) => {
-  // Đảm bảo answers có 40 phần tử
-  const displayedAnswers = Array.from({ length: 40 }, (_, i) => answers[i] || "-");
+const Review = () => {
+  // Tạo state để lưu trữ câu trả lời
+  const [answers, setAnswers] = useState([]);
 
-  // Chia 40 phần tử thành các hàng 4 phần tử mỗi hàng
+  useEffect(() => {
+    // Lấy câu trả lời từ localStorage cho các biến từ Q1 đến Q40
+    const storedAnswers = Array.from({ length: 40 }, (_, i) => {
+      const answer = localStorage.getItem(`Q${i + 1}`);
+      return answer ? answer : "-"; // Nếu không có giá trị, đặt là "-"
+    });
+    setAnswers(storedAnswers);
+  }, []);
+
+  // Chia các câu trả lời thành các hàng, mỗi hàng 4 câu
   const rows = [];
-  for (let i = 0; i < displayedAnswers.length; i += 4) {
-    rows.push(displayedAnswers.slice(i, i + 4));
+  for (let i = 0; i < answers.length; i += 4) {
+    rows.push(answers.slice(i, i + 4));
   }
 
   return (

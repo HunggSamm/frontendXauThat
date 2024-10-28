@@ -163,7 +163,7 @@ function App() {
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
-            <Review answers={["A", "B", "C", "D"]} /> {/* Bạn có thể truyền dữ liệu answers vào đây */}
+            <Review /> 
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={onClose}>
