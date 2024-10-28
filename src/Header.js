@@ -13,7 +13,15 @@ import {
   Select,
   Spacer,
   Image,
-  HStack
+  HStack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  useDisclosure
 } from '@chakra-ui/react';
 import {
   FaPause,
@@ -30,13 +38,16 @@ import {
   TbPlayerTrackPrevFilled,
   TbPlayerTrackNextFilled
 } from 'react-icons/tb';
+import Review from './Review';
 
 function App() {
   const audioRef = useRef(new Audio('https://codeskulptor-demos.commondatastorage.googleapis.com/pang/paza-moduless.mp3'));
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [volume, setVolume] = useState(0.5); // Giá trị volume từ 0 đến 1
-  const [showRemainingTime, setShowRemainingTime] = useState(false); // Để quản lý trạng thái thời gian hiển thị
+  const [volume, setVolume] = useState(0.5);
+  const [showRemainingTime, setShowRemainingTime] = useState(false);
+
+  const { isOpen, onOpen, onClose } = useDisclosure(); // Quản lý trạng thái modal Review
 
   useEffect(() => {
     audioRef.current.volume = volume;
@@ -73,18 +84,17 @@ function App() {
     setVolume(value / 100);
   };
 
-  // Định dạng thời gian hiển thị (HH:MM:SS)
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
-  // Hàm chuyển đổi giữa thời gian đã phát và thời gian còn lại
   const toggleTimeDisplay = () => {
     setShowRemainingTime(!showRemainingTime);
   };
 
+  
   return (
     <ChakraProvider>
       <Box w="100%" p={4} bg="white" boxShadow="md">
@@ -101,7 +111,7 @@ function App() {
             <IconButton aria-label="Review" icon={<FaPenFancy />} backgroundColor="transparent" />
             <IconButton aria-label="Toggle List" icon={<FaListUl />} backgroundColor="transparent" />
             <IconButton aria-label="Expand" icon={<FaExpand />} backgroundColor="transparent" />
-            <Button variant="outline" leftIcon={<AiOutlineFileSearch />} backgroundColor="transparent" border="none">Review</Button>
+            <Button variant="outline" leftIcon={<AiOutlineFileSearch />} backgroundColor="transparent" border="none" onClick={onOpen}>Review</Button>
             <Button colorScheme="teal" rightIcon={<CiPaperplane style={{ fontSize: '24px' }} />} >Submit</Button>
           </Box>
         </SimpleGrid>
@@ -116,8 +126,8 @@ function App() {
           {/* Time Display */}
           <Text onClick={toggleTimeDisplay} cursor="pointer">
             {showRemainingTime
-              ? `-${formatTime(audioRef.current.duration - currentTime)}` // Thời gian còn lại
-              : formatTime(currentTime)} {/* Thời gian đã phát */}
+              ? `-${formatTime(audioRef.current.duration - currentTime)}`
+              : formatTime(currentTime)}
           </Text>
 
           <Slider aria-label="time-slider" value={currentTime} max={audioRef.current.duration || 0} onChange={(value) => {
@@ -146,6 +156,22 @@ function App() {
           </Select>
         </HStack>
       </Box>
+
+      {/* Modal hiển thị nội dung Review */}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <Review answers={["A", "B", "C", "D"]} /> {/* Bạn có thể truyền dữ liệu answers vào đây */}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </ChakraProvider>
   );
 }

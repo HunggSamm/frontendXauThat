@@ -11,27 +11,40 @@ import Part4 from './Part4';
 const ListeningTest = () => {
   const [activePart, setActivePart] = useState('part1');
   const [scrollToQuestion, setScrollToQuestion] = useState(null);
-  // Change to store actual answer values instead of just question numbers
-  const [answers, setAnswers] = useState({});
+  
+  // Initialize answers state from localStorage
+  const [answers, setAnswers] = useState(() => {
+    const savedAnswers = {};
+    // Check all possible questions (1-40)
+    for (let i = 1; i <= 40; i++) {
+      const savedAnswer = localStorage.getItem(`Q${i}`);
+      if (savedAnswer) {
+        savedAnswers[i] = savedAnswer;
+      }
+    }
+    return savedAnswers;
+  });
 
-  // Updated handler to track actual answer values
+  // Handler for question answers
   const handleQuestionAnswered = (questionNumber, value) => {
     setAnswers(prev => {
-      // If value is empty or undefined, remove the answer
+      const newAnswers = { ...prev };
       if (!value) {
-        const newAnswers = { ...prev };
         delete newAnswers[questionNumber];
-        return newAnswers;
+      } else {
+        newAnswers[questionNumber] = value;
       }
-      // Otherwise store the answer
-      return {
-        ...prev,
-        [questionNumber]: value
-      };
+      return newAnswers;
     });
+
+    // Save to localStorage
+    if (value) {
+      localStorage.setItem(`Q${questionNumber}`, value);
+    } else {
+      localStorage.removeItem(`Q${questionNumber}`);
+    }
   };
 
-  // Helper function to get set of answered questions (those with actual values)
   const getAnsweredQuestions = () => {
     return new Set(Object.keys(answers).map(Number));
   };
@@ -66,9 +79,11 @@ const ListeningTest = () => {
         setActivePart={setActivePart}
         setScrollToQuestion={setScrollToQuestion}
         answeredQuestions={getAnsweredQuestions()}
+        answers={answers} // Pass answers to Footer if needed
       />
     </ChakraProvider>
   );
 };
+
 
 export default ListeningTest;

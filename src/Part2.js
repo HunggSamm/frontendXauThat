@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   ChakraProvider,
   Box,
@@ -12,7 +12,7 @@ import {
 import { FaHeadphones } from 'react-icons/fa';
 import SingleChoiceQuestion from './SingleChoiceQuestion';
 
-function Part2({ scrollToQuestion, onQuestionAnswered, answers }) {
+function Part2({ scrollToQuestion, onQuestionAnswered }) {
   const questionsData = [
     {
       question: "The company deals mostly with:",
@@ -59,28 +59,57 @@ function Part2({ scrollToQuestion, onQuestionAnswered, answers }) {
       ],
       questionNumber: 15,
     },
-    // Thêm các câu hỏi khác
   ];
 
+  const [answers, setAnswers] = useState(() => {
+    // Lấy câu trả lời từ localStorage khi trang load
+    const savedAnswers = {};
+    // Lấy cả câu hỏi từ 11 đến 20
+    [...Array(20).keys()].forEach((i) => {
+      const questionNumber = i + 1;
+      const savedAnswer = localStorage.getItem(`Q${questionNumber}`);
+      if (savedAnswer) {
+        savedAnswers[questionNumber] = savedAnswer;
+      }
+    });
+    return savedAnswers;
+  });
+
   const questionRefs = useRef([]);
-  const questionRefs16To20 = useRef([]); // Ref cho các câu hỏi từ 16 đến 20
+  const questionRefs16To20 = useRef([]);
+
+  // Function để lưu câu trả lời vào localStorage
+  const handleQuestionAnswered = (questionNumber, answer) => {
+    setAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [questionNumber]: answer,
+    }));
+
+    // Lưu câu trả lời vào localStorage, dạng biến Q11, Q12, v.v.
+    localStorage.setItem(`Q${questionNumber}`, answer);
+
+    // Gọi callback bên ngoài nếu cần
+    if (onQuestionAnswered) {
+      onQuestionAnswered(questionNumber, answer);
+    }
+  };
 
   useEffect(() => {
     if (scrollToQuestion) {
       if (scrollToQuestion >= 11 && scrollToQuestion <= 15) {
         const questionIndex = scrollToQuestion - 11;
         if (questionRefs.current[questionIndex]) {
-          questionRefs.current[questionIndex].scrollIntoView({ 
+          questionRefs.current[questionIndex].scrollIntoView({
             behavior: "smooth",
-            block: "center" 
+            block: "center",
           });
         }
       } else if (scrollToQuestion >= 16 && scrollToQuestion <= 20) {
         const questionIndex = scrollToQuestion - 16;
         if (questionRefs16To20.current[questionIndex]) {
-          questionRefs16To20.current[questionIndex].scrollIntoView({ 
+          questionRefs16To20.current[questionIndex].scrollIntoView({
             behavior: "smooth",
-            block: "center" 
+            block: "center",
           });
         }
       }
@@ -94,18 +123,26 @@ function Part2({ scrollToQuestion, onQuestionAnswered, answers }) {
           <Text fontSize="2xl" fontWeight="bold">
             Part 2
           </Text>
-          
+
           <HStack spacing={4} alignItems="center">
             <Text fontSize="xl" color="teal.500" fontWeight="bold">
               Questions 11-15
             </Text>
-            <Button leftIcon={<Icon as={FaHeadphones} />} colorScheme="teal" variant="outline">
+            <Button
+              leftIcon={<Icon as={FaHeadphones} />}
+              colorScheme="teal"
+              variant="outline"
+            >
               Listen from here
             </Button>
           </HStack>
 
           <Text>
-            Choose the correct letter, <Text as="span" fontWeight="bold">A, B, or C</Text>.
+            Choose the correct letter,{" "}
+            <Text as="span" fontWeight="bold">
+              A, B, or C
+            </Text>
+            .
           </Text>
 
           <VStack align="start" spacing={6} pt={4}>
@@ -118,8 +155,8 @@ function Part2({ scrollToQuestion, onQuestionAnswered, answers }) {
                   question={data.question}
                   options={data.options}
                   questionNumber={data.questionNumber}
-                  onQuestionAnswered={onQuestionAnswered}
-                  selectedValue={answers[data.questionNumber]}
+                  onQuestionAnswered={handleQuestionAnswered}
+                  selectedValue={answers[data.questionNumber] || ""}
                 />
               </div>
             ))}
@@ -131,29 +168,48 @@ function Part2({ scrollToQuestion, onQuestionAnswered, answers }) {
               <Text fontSize="xl" color="teal.500" fontWeight="bold">
                 Questions 16-20
               </Text>
-              <Button leftIcon={<Icon as={FaHeadphones} />} colorScheme="teal" variant="outline">
+              <Button
+                leftIcon={<Icon as={FaHeadphones} />}
+                colorScheme="teal"
+                variant="outline"
+              >
                 Listen from here
               </Button>
             </HStack>
 
             <Text>Identify the rooms in the office plan.</Text>
-            <Text>Write the correct letter, <Text as="span" fontWeight="bold">A-G</Text>, next to the questions.</Text>
+            <Text>
+              Write the correct letter,{" "}
+              <Text as="span" fontWeight="bold">
+                A-G
+              </Text>
+              , next to the questions.
+            </Text>
 
-            <Box as="img" src="https://res.cloudinary.com/dnhvlncfw/image/upload/v1728881932/cld-sample-3.jpg" alt="Office Plan" w="100%" maxW="500px" />
+            <Box
+              as="img"
+              src="https://res.cloudinary.com/dnhvlncfw/image/upload/v1728881932/cld-sample-3.jpg"
+              alt="Office Plan"
+              w="100%"
+              maxW="500px"
+            />
 
             <VStack align="start" spacing={4}>
               {[16, 17, 18, 19, 20].map((questionNumber, index) => (
-                <HStack key={questionNumber} ref={(el) => (questionRefs16To20.current[index] = el)}>
+                <HStack
+                  key={questionNumber}
+                  ref={(el) => (questionRefs16To20.current[index] = el)}
+                >
                   <Text>{questionNumber}.</Text>
-                  <Select 
+                  <Select
                     placeholder="Select"
-                    value={answers[questionNumber] || ''}
+                    value={answers[questionNumber] || ""}
                     w="100px"
                     onChange={(e) => {
                       const value = e.target.value;
-                      onQuestionAnswered(questionNumber, value);
+                      handleQuestionAnswered(questionNumber, value);
                     }}
-                  > 
+                  >
                     <option value="A">A</option>
                     <option value="B">B</option>
                     <option value="C">C</option>

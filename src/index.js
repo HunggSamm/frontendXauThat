@@ -20,12 +20,18 @@ import TaoKhoaHoc from './TaoKhoaHoc'
 import Notice from './Notice';
 import Fail from './Fail';
 import Success from './Success';
+import Review from './Review';
+import {
+  ChakraProvider
+} from '@chakra-ui/react';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const content = '<h1><strong>Hung:</strong></h1><p>abc ok </p><p><br></p><p><br></p>';
 
 root.render(
   <React.StrictMode>
-    <ListeningTest />
+    <ChakraProvider>
+      <ListeningTest />
+    </ChakraProvider>
   </React.StrictMode>
 );
 
