@@ -1,8 +1,11 @@
 import React from 'react';
 import { Box, SimpleGrid, VStack, Text, Button, Collapse, HStack } from "@chakra-ui/react";
 
-function PartSection({ partNumber, questionRange, activePart, setActivePart, setScrollToQuestion }) {
+function PartSection({ partNumber, questionRange, activePart, setActivePart, setScrollToQuestion, answeredQuestions }) {
   const isActive = activePart === `part${partNumber}`;
+  
+  // Calculate progress
+  const answeredCount = questionRange.filter(num => answeredQuestions.has(num)).length;
 
   return (
     <VStack
@@ -24,7 +27,7 @@ function PartSection({ partNumber, questionRange, activePart, setActivePart, set
                 key={num}
                 size="sm"
                 borderRadius="full"
-                variant="outline"
+                variant={answeredQuestions.has(num) ? "solid" : "outline"}
                 colorScheme="teal"
                 w="26px"
                 h="30px"
@@ -41,7 +44,7 @@ function PartSection({ partNumber, questionRange, activePart, setActivePart, set
       ) : (
         <Text fontWeight="bold" color="teal.500">
           Part {partNumber} : <Text as="span" fontWeight="normal" color="black">
-            0 of {questionRange.length} questions
+            {answeredCount} of {questionRange.length} questions
           </Text>
         </Text>
       )}
@@ -49,7 +52,8 @@ function PartSection({ partNumber, questionRange, activePart, setActivePart, set
   );
 }
 
-function Footer({ activePart, setActivePart, setScrollToQuestion }) {
+
+function Footer({ activePart, setActivePart, setScrollToQuestion, answeredQuestions }) {
   const parts = [
     { partNumber: 1, questionRange: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
     { partNumber: 2, questionRange: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20] },
@@ -68,6 +72,7 @@ function Footer({ activePart, setActivePart, setScrollToQuestion }) {
             activePart={activePart}
             setActivePart={setActivePart}
             setScrollToQuestion={setScrollToQuestion}
+            answeredQuestions={answeredQuestions}
           />
         ))}
       </SimpleGrid>

@@ -12,7 +12,7 @@ import {
 import { FaHeadphones } from 'react-icons/fa';
 import SingleChoiceQuestion from './SingleChoiceQuestion';
 
-function Part2({ scrollToQuestion }) {
+function Part2({ scrollToQuestion, onQuestionAnswered, answers }) {
   const questionsData = [
     {
       question: "The company deals mostly with:",
@@ -70,14 +70,18 @@ function Part2({ scrollToQuestion }) {
       if (scrollToQuestion >= 11 && scrollToQuestion <= 15) {
         const questionIndex = scrollToQuestion - 11;
         if (questionRefs.current[questionIndex]) {
-          questionRefs.current[questionIndex].scrollIntoView({          behavior: "smooth", 
-            block: "center"  });
+          questionRefs.current[questionIndex].scrollIntoView({ 
+            behavior: "smooth",
+            block: "center" 
+          });
         }
       } else if (scrollToQuestion >= 16 && scrollToQuestion <= 20) {
         const questionIndex = scrollToQuestion - 16;
         if (questionRefs16To20.current[questionIndex]) {
-          questionRefs16To20.current[questionIndex].scrollIntoView({           behavior: "smooth", 
-            block: "center"  });
+          questionRefs16To20.current[questionIndex].scrollIntoView({ 
+            behavior: "smooth",
+            block: "center" 
+          });
         }
       }
     }
@@ -114,6 +118,8 @@ function Part2({ scrollToQuestion }) {
                   question={data.question}
                   options={data.options}
                   questionNumber={data.questionNumber}
+                  onQuestionAnswered={onQuestionAnswered}
+                  selectedValue={answers[data.questionNumber]}
                 />
               </div>
             ))}
@@ -139,7 +145,15 @@ function Part2({ scrollToQuestion }) {
               {[16, 17, 18, 19, 20].map((questionNumber, index) => (
                 <HStack key={questionNumber} ref={(el) => (questionRefs16To20.current[index] = el)}>
                   <Text>{questionNumber}.</Text>
-                  <Select placeholder="Select" w="100px">
+                  <Select 
+                    placeholder="Select"
+                    value={answers[questionNumber] || ''}
+                    w="100px"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      onQuestionAnswered(questionNumber, value);
+                    }}
+                  > 
                     <option value="A">A</option>
                     <option value="B">B</option>
                     <option value="C">C</option>
