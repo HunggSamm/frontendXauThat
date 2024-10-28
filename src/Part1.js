@@ -17,16 +17,37 @@ import {
 } from "@chakra-ui/react";
 import { FaHeadphones } from 'react-icons/fa';
 
+// Data structure for questions in Part 1
+const questionsPart1 = [
+  { label: 'Destination', placeholder: '1' },
+  { label: 'Weather', placeholder: '2' },
+  { label: 'Arrival time', placeholder: '3' },
+  { label: 'Activities Planned See', placeholder: '4' },
+  { label: 'Attend', placeholder: '5' },
+  { label: 'Return time', placeholder: '6' },
+];
+
+// Data structure for table questions in Part 2
+const tableData = [
+  { nationality: '', percentage: 26, placeholder: '7' },
+  { nationality: '', percentage: 25, placeholder: '8' },
+  { nationality: '', percentage: 16, placeholder: '9' },
+  { nationality: 'Indonesian', percentage: 15 },
+  { nationality: '', percentage: 8, placeholder: '10' },
+  { nationality: 'Saudi', percentage: 7 },
+  { nationality: 'Other', percentage: 3 },
+];
+
 function Part1() {
   return (
     <ChakraProvider>
       <Box w="100%" p={6} bg="white" boxShadow="lg" borderRadius="md">
-        {/* Part 1 Title */}
         <VStack align="start" spacing={4}>
+          {/* Part 1 Title */}
           <Text fontSize="2xl" fontWeight="bold">
             Part 1
           </Text>
-          
+
           {/* Questions 1-6 Header */}
           <HStack spacing={4} alignItems="center">
             <Text fontSize="xl" color="teal.500" fontWeight="bold">
@@ -50,40 +71,17 @@ function Part1() {
               <Text>Wednesday (Example)</Text>
             </HStack>
 
-            <HStack>
-              <Text fontWeight="bold">Destination:</Text>
-              <Input placeholder="1" w="100px" />
-            </HStack>
-
-            <HStack>
-              <Text fontWeight="bold">Weather:</Text>
-              <Input placeholder="2" w="100px" />
-            </HStack>
-
-            <HStack>
-              <Text fontWeight="bold">Arrival time:</Text>
-              <Input placeholder="3" w="100px" />
-            </HStack>
-
-            <HStack>
-              <Text fontWeight="bold">Activities Planned See:</Text>
-              <Input placeholder="4" w="100px" />
-            </HStack>
+            {questionsPart1.map((question, index) => (
+              <HStack key={index}>
+                <Text fontWeight="bold">{question.label}:</Text>
+                <Input placeholder={question.placeholder} w="100px" />
+              </HStack>
+            ))}
 
             {/* Make "Eat" bold and "Catered lunch" normal */}
             <HStack>
               <Text fontWeight="bold">Eat:</Text>
               <Text>Catered lunch</Text>
-            </HStack>
-
-            <HStack>
-              <Text fontWeight="bold">Attend:</Text>
-              <Input placeholder="5" w="100px" />
-            </HStack>
-
-            <HStack>
-              <Text fontWeight="bold">Return time:</Text>
-              <Input placeholder="6" w="100px" />
             </HStack>
           </VStack>
 
@@ -109,42 +107,18 @@ function Part1() {
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td border="1px" borderColor="gray.200" w="150px">
-                    <Input placeholder="7" w="100px" />
-                  </Td>
-                  <Td border="1px" borderColor="gray.200">26</Td>
-                </Tr>
-                <Tr>
-                  <Td border="1px" borderColor="gray.200" w="150px">
-                    <Input placeholder="8" w="100px" />
-                  </Td>
-                  <Td border="1px" borderColor="gray.200">25</Td>
-                </Tr>
-                <Tr>
-                  <Td border="1px" borderColor="gray.200" w="150px">
-                    <Input placeholder="9" w="100px" />
-                  </Td>
-                  <Td border="1px" borderColor="gray.200">16</Td>
-                </Tr>
-                <Tr>
-                  <Td border="1px" borderColor="gray.200" w="150px">Indonesian</Td>
-                  <Td border="1px" borderColor="gray.200">15</Td>
-                </Tr>
-                <Tr>
-                  <Td border="1px" borderColor="gray.200" w="150px">
-                    <Input placeholder="10" w="100px" />
-                  </Td>
-                  <Td border="1px" borderColor="gray.200">8</Td>
-                </Tr>
-                <Tr>
-                  <Td border="1px" borderColor="gray.200" w="150px">Saudi</Td>
-                  <Td border="1px" borderColor="gray.200">7</Td>
-                </Tr>
-                <Tr>
-                  <Td border="1px" borderColor="gray.200" w="150px">Other</Td>
-                  <Td border="1px" borderColor="gray.200">3</Td>
-                </Tr>
+                {tableData.map((row, index) => (
+                  <Tr key={index}>
+                    <Td border="1px" borderColor="gray.200" w="150px">
+                      {row.nationality ? (
+                        <Text>{row.nationality}</Text>
+                      ) : (
+                        <Input placeholder={row.placeholder} w="100px" />
+                      )}
+                    </Td>
+                    <Td border="1px" borderColor="gray.200">{row.percentage}</Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
           </Box>
