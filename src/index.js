@@ -20,7 +20,8 @@ import TaoKhoaHoc from './TaoKhoaHoc'
 import Notice from './Notice';
 import Fail from './Fail';
 import Success from './Success';
-import Review from './Review';
+import ReviewCourse from './ReviewCourse';
+import Chart from './LineChart';
 import {
   ChakraProvider
 } from '@chakra-ui/react';
@@ -30,7 +31,7 @@ const content = '<h1><strong>Hung:</strong></h1><p>abc ok </p><p><br></p><p><br>
 root.render(
   <React.StrictMode>
     <ChakraProvider>
-      <ListeningTest />
+      <Chart />
     </ChakraProvider>
   </React.StrictMode>
 );
