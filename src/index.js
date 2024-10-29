@@ -22,6 +22,7 @@ import Fail from './Fail';
 import Success from './Success';
 import ReviewCourse from './ReviewCourse';
 import Chart from './LineChart';
+import StudentLearn from './StudentLearn'
 import {
   ChakraProvider
 } from '@chakra-ui/react';
@@ -31,7 +32,7 @@ const content = '<h1><strong>Hung:</strong></h1><p>abc ok </p><p><br></p><p><br>
 root.render(
   <React.StrictMode>
     <ChakraProvider>
-      <Chart />
+      <StudentLearn />
     </ChakraProvider>
   </React.StrictMode>
 );
