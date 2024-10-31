@@ -1,0 +1,30 @@
+/* Đảm bảo rằng các danh sách có thụt lề và hiển thị đúng */
+.editor-content ul, .editor-content ol {
+  padding-left: 40px; /* Thụt lề cho danh sách */
+  list-style-position: inside; /* Đảm bảo danh sách hiển thị bên trong phần thụt lề */
+}
+
+.editor-content li {
+  margin-bottom: 8px; /* Khoảng cách giữa các phần tử danh sách */
+}
+
+/* Đảm bảo các heading được hiển thị đẹp */
+.editor-content h1, .editor-content h2 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+/* Đảm bảo các heading được hiển thị đẹp */
+.editor-content h1 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 32px; /* Kích cỡ cho h1 */
+}
+
+.editor-content h2 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 24px; /* Kích cỡ cho h2 */
+}

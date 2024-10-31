@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Box, Button, VStack } from '@chakra-ui/react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // CSS mặc định của react-quill
+import './EditerStyles.css'; // Thêm file CSS tùy chỉnh
 
 const FullTextEditor = () => {
   const [value, setValue] = useState(''); // Giá trị của văn bản
+  const [savedContent, setSavedContent] = useState(''); // Nội dung đã lưu
 
   const modules = {
     toolbar: [
@@ -20,6 +22,7 @@ const FullTextEditor = () => {
   };
 
   const handleSave = () => {
+    setSavedContent(value); // Lưu nội dung vào savedContent
     console.log('Nội dung lưu:', value);
     // Xử lý lưu giá trị tới API hoặc database
   };
@@ -49,24 +52,28 @@ const FullTextEditor = () => {
       >
         Lưu
       </Button>
+
+      {/* Hiển thị nội dung đã lưu */}
+      {savedContent && (
+        <DisplayContent content={savedContent} />
+      )}
     </VStack>
   );
 };
 
 const DisplayContent = ({ content }) => {
-    return (
-      <Box
-        w="100%"
-        maxW="800px"
-        p={4}
-        borderWidth="1px"
-        borderRadius="lg"
-        boxShadow="md"
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
-    );
-  };
+  return (
+    <Box
+      className="editor-content" // Thêm class để áp dụng style
+      w="100%"
+      maxW="800px"
+      p={4}
+      borderWidth="1px"
+      borderRadius="lg"
+      boxShadow="md"
+      dangerouslySetInnerHTML={{ __html: content }}
+    />
+  );
+};
 
-  
-export default DisplayContent;
-  
+export default FullTextEditor;
