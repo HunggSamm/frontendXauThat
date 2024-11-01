@@ -25,16 +25,16 @@ import Chart from "./LineChart";
 import StudentLearn from "./StudentLearn";
 import CourseCard from "./CourseCard";
 import Learn from "./Learn";
-import Drip from "./QuoteApp";
+import Drip from "./ReviewReport";
 import { ChakraProvider } from "@chakra-ui/react";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const content =
   "<h1><strong>Hung:</strong></h1><p>abc ok </p><p><br></p><p><br></p>";
 
 root.render(
-    <ChakraProvider>
-      <Drip />
-    </ChakraProvider>
+  <ChakraProvider>
+    <Drip />
+  </ChakraProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
