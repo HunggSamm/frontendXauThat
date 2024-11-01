@@ -126,7 +126,7 @@ const LessonItem = ({ icon, title, duration, iconColor, onClick, typeLesson, com
   </HStack>
 );
 
-const App = () => {
+const Learn = () => {
   const [selectedLesson, setSelectedLesson] = useState(courseData[0].lessons[0]);
   const [courses, setCourses] = useState(courseData); // Maintain courses state
 
@@ -280,4 +280,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Learn;
