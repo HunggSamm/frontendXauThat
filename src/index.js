@@ -25,7 +25,7 @@ import Chart from "./LineChart";
 import StudentLearn from "./StudentLearn";
 import CourseCard from "./CourseCard";
 import Learn from "./Learn";
-import Drip from "./ReviewReport";
+import Drip from "./CrudBundle";
 import { ChakraProvider } from "@chakra-ui/react";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const content =
