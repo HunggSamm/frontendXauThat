@@ -1,0 +1,32 @@
+.alternating-container {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.grid-container {
+  background: orange;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  border-radius: 8px;
+  justify-content: center;
+}
+
+.item {
+  background: purple;
+  height: 80px;
+  width: 200px;
+  margin: 10px;
+  margin-right: 100px;
+  margin-bottom: 50px;
+  line-height: 80px;
+  color: white;
+  font-weight: bold;
+  font-size: 2em;
+  text-align: center;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

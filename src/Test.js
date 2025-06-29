@@ -1,256 +1,111 @@
-import React, { useState } from "react";
-import {
-  ChakraProvider,
-  Box,
-  Flex,
-  Select,
-  Editable,
-  EditableInput,
-  EditablePreview,
-  IconButton,
-  Button,
-  Collapse,
-  Heading,
-} from "@chakra-ui/react";
-import { AddIcon, DeleteIcon, ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
-import SingleChoice from "./SingleChoice";
-import MultipleChoice from "./MultipleChoice";
-import TrueFalse from "./TrueFalse";
-import Mapping from "./Mapping";
+import React, { useState, useEffect } from "react";
+import Xarrow from "react-xarrows";
 
-function App() {
-  // State to store sections and their questions
-  const [sections, setSections] = useState([
-    {
-      id: 1,
-      title: "Section 1",
-      questions: [
-        { id: 1, type: "single", text: "What does CPU stand for?" },
-      ],
-      isExpanded: true, // Track if the section is expanded or collapsed
-    },
-  ]);
+export default function ProcessFlow() {
+  const steps = ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"];
 
-  // Function to add a new section
-  const addSection = () => {
-    const newSection = {
-      id: sections.length + 1,
-      title: `Section ${sections.length + 1}`,
-      questions: [],
-      isExpanded: true, // Default to expanded when created
+  const [itemsPerRow, setItemsPerRow] = useState(getItemsPerRow());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerRow(getItemsPerRow());
     };
-    setSections([...sections, newSection]);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  function getItemsPerRow() {
+    const width = window.innerWidth;
+    if (width < 600) return 2;
+    if (width < 900) return 3;
+    return 4;
+  }
+
+  const containerStyle = {
+    position: "relative",
+    width: "100%",
+    minHeight: "100vh",
+    padding: 20,
+    boxSizing: "border-box",
   };
 
-  // Function to remove a section
-  const removeSection = (sectionId) => {
-    setSections(sections.filter((section) => section.id !== sectionId));
+  const rowStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 20,
+    margin: "20px 0",
+    width: "100%",
   };
 
-  // Function to toggle the expansion of a section
-  const toggleSectionExpand = (sectionId) => {
-    setSections(
-      sections.map((section) =>
-        section.id === sectionId
-          ? { ...section, isExpanded: !section.isExpanded }
-          : section
-      )
-    );
+  const reverseRowStyle = {
+    ...rowStyle,
+    flexDirection: "row-reverse",
   };
 
-  // Function to add a new question to a specific section
-  const addQuestion = (sectionId) => {
-    const newQuestion = {
-      id: Date.now(), // Unique ID using timestamp
-      type: "single",
-      text: "New question",
-    };
-    setSections(
-      sections.map((section) =>
-        section.id === sectionId
-          ? { ...section, questions: [...section.questions, newQuestion] }
-          : section
-      )
-    );
+  const stepStyle = {
+    flex: "1 1 0",
+    minWidth: 120,
+    height: 100,
+    background: "#eee",
+    border: "2px solid #333",
+    borderRadius: 8,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+    boxSizing: "border-box",
   };
 
-  // Function to remove a question from a section
-  const removeQuestion = (sectionId, questionId) => {
-    setSections(
-      sections.map((section) =>
-        section.id === sectionId
-          ? {
-              ...section,
-              questions: section.questions.filter(
-                (question) => question.id !== questionId
-              ),
-            }
-          : section
-      )
-    );
-  };
+  // Tách nhóm theo hàng + xử lý ziczac
+  const rows = [];
+  for (let i = 0; i < steps.length; i += itemsPerRow) {
+    const group = steps.slice(i, i + itemsPerRow);
+    const isReverse = Math.floor(i / itemsPerRow) % 2 !== 0;
+    rows.push(isReverse ? group.reverse() : group);
+  }
 
-  // Function to update the question type in a section
-  const updateQuestionType = (sectionId, questionId, newType) => {
-    setSections(
-      sections.map((section) =>
-        section.id === sectionId
-          ? {
-              ...section,
-              questions: section.questions.map((question) =>
-                question.id === questionId
-                  ? { ...question, type: newType }
-                  : question
-              ),
-            }
-          : section
-      )
-    );
-  };
-
-  // Function to render the question component based on its type
-  const renderQuestionComponent = (question) => {
-    switch (question.type) {
-      case "single":
-        return (
-          <SingleChoice
-            key={question.id}
-            answers={[
-              "Computer Processing Unit",
-              "Central Peripheral Unit",
-              "Central Processing Unit",
-              "Computer Processing User",
-            ]}
-          />
-        );
-      case "multiple":
-        return (
-          <MultipleChoice
-            key={question.id}
-            answers={[
-              "Computer Processing Unit",
-              "Central Peripheral Unit",
-              "Central Processing Unit",
-              "Computer Processing User",
-            ]}
-          />
-        );
-      case "true-false":
-        return <TrueFalse key={question.id} />;
-      case "matching":
-        return (
-          <Mapping
-            key={question.id}
-            data={[
-              { question: "Bill", answer: "Gates" },
-              { question: "Steve", answer: "Jobs" },
-              { question: "Elon", answer: "Musk" },
-              { question: "Mark", answer: "Zuckerberg" },
-            ]}
-          />
-        );
-      default:
-        return null;
-    }
-  };
+  // Dùng mảng lưu lại thứ tự ID thực tế trên màn hình
+  const visibleOrder = [];
+  rows.forEach((row, rowIndex) => {
+    row.forEach((step, index) => {
+      visibleOrder.push({
+        label: step,
+        globalIndex: rowIndex * itemsPerRow + (Math.floor(rowIndex % 2) === 0 ? index : row.length - 1 - index),
+      });
+    });
+  });
 
   return (
-    <ChakraProvider>
-      <Box p={8} bg="gray.100" minH="100vh">
-        {/* Header to add a new section */}
-        <Flex justify="space-between" mb={4} align="center">
-          <Button colorScheme="blue" onClick={addSection} leftIcon={<AddIcon />}>
-            Add Section
-          </Button>
-        </Flex>
+    <div style={containerStyle}>
+      {rows.map((row, rowIndex) => (
+        <div
+          key={rowIndex}
+          style={rowIndex % 2 === 0 ? rowStyle : reverseRowStyle}
+        >
+          {row.map((step, index) => {
+            const trueIndex = rowIndex * itemsPerRow + (rowIndex % 2 === 0 ? index : row.length - 1 - index);
+            return (
+              <div key={trueIndex} id={`step-${trueIndex}`} style={stepStyle}>
+                {step}
+              </div>
+            );
+          })}
+        </div>
+      ))}
 
-        {/* Render list of sections */}
-        {sections.map((section) => (
-          <Box key={section.id} p={4} bg="white" mb={4} borderRadius="lg" borderWidth="1px">
-            <Flex justify="space-between" align="center">
-              {/* Editable section title */}
-              <Editable defaultValue={section.title}>
-                <EditablePreview />
-                <EditableInput />
-              </Editable>
-
-              <Flex align="center">
-                {/* Expand/Collapse button */}
-                <IconButton
-                  icon={section.isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                  aria-label={section.isExpanded ? "Collapse section" : "Expand section"}
-                  onClick={() => toggleSectionExpand(section.id)}
-                  mr={2}
-                />
-
-                {/* Delete section button */}
-                <IconButton
-                  icon={<DeleteIcon />}
-                  aria-label="Delete section"
-                  colorScheme="red"
-                  onClick={() => removeSection(section.id)}
-                />
-              </Flex>
-            </Flex>
-
-            {/* Collapse/Expand questions inside the section */}
-            <Collapse in={section.isExpanded} animateOpacity>
-              <Flex justify="flex-end" mb={4}>
-                <Button
-                  colorScheme="green"
-                  onClick={() => addQuestion(section.id)}
-                  leftIcon={<AddIcon />}
-                >
-                  Add Question
-                </Button>
-              </Flex>
-
-              {/* Render list of questions within the section */}
-              {section.questions.map((question) => (
-                <Box key={question.id} p={4} bg="gray.50" mb={4} borderRadius="lg" borderWidth="1px">
-                  <Flex justify="space-between" mb={4} align="center">
-                    {/* Editable question text */}
-                    <Editable defaultValue={question.text}>
-                      <EditablePreview />
-                      <EditableInput />
-                    </Editable>
-
-                    <Flex align="center">
-                      {/* Select to change the question type */}
-                      <Select
-                        w="200px"
-                        mr={2}
-                        value={question.type}
-                        onChange={(e) =>
-                          updateQuestionType(section.id, question.id, e.target.value)
-                        }
-                      >
-                        <option value="single">Single choice</option>
-                        <option value="multiple">Multiple choice</option>
-                        <option value="true-false">True-False</option>
-                        <option value="matching">Matching</option>
-                      </Select>
-
-                      {/* Delete question button */}
-                      <IconButton
-                        icon={<DeleteIcon />}
-                        aria-label="Delete question"
-                        colorScheme="red"
-                        onClick={() => removeQuestion(section.id, question.id)}
-                      />
-                    </Flex>
-                  </Flex>
-
-                  {/* Render the question component based on its type */}
-                  {renderQuestionComponent(question)}
-                </Box>
-              ))}
-            </Collapse>
-          </Box>
-        ))}
-      </Box>
-    </ChakraProvider>
+      {/* Vẽ mũi tên nối đúng theo thứ tự hiển thị thực tế */}
+      {visibleOrder.map((item, idx) =>
+        idx < visibleOrder.length - 1 ? (
+          <Xarrow
+            key={idx}
+            start={`step-${item.globalIndex}`}
+            end={`step-${visibleOrder[idx + 1].globalIndex}`}
+            strokeWidth={2}
+            color="black"
+            path="smooth"
+          />
+        ) : null
+      )}
+    </div>
   );
 }
-
-export default App;
