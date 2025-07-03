@@ -71,11 +71,15 @@ const ProcessFlow = () => {
 
       const line = new LeaderLine(elems[i], elems[i + 1], options);
       lineRefs.current.push(line);
+      line.show("draw", { duration: 3000 });
     }
   };
 
   const adjustLayout = () => {
     if (!containerRef.current || !itemRef.current) return;
+
+    // Thu toàn bộ line
+    lineRefs.current.forEach((line) => line?.hide("fade", { duration: 0 }));
 
     const elems = containerRef.current.querySelectorAll(".item");
     const nTotal = elems.length;
@@ -104,18 +108,6 @@ const ProcessFlow = () => {
         if (index >= nTotal) break;
 
         const elem = elems[index];
-        const startIndexOfRow = row * numCols;
-        const endIndexOfRow = Math.min((row + 1) * numCols, nTotal) - 1;
-
-        elem.style.border = "none";
-
-        // if (index === startIndexOfRow) {
-        //   elem.style.border = "2px solid green";
-        // }
-        // if (index === endIndexOfRow) {
-        //   elem.style.border = "2px solid red";
-        // }
-
         elem.style.marginLeft = "10px";
 
         if (row % 2 === 0) {
@@ -135,7 +127,11 @@ const ProcessFlow = () => {
       }
     }
 
-    setTimeout(drawLines, 200);
+    // Sau khi layout ổn định, vẽ lại line
+
+    lineRefs.current.forEach((line) => line?.remove());
+    lineRefs.current = [];
+    drawLines();
   };
 
   useEffect(() => {

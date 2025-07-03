@@ -5,16 +5,15 @@
 }
 
 .grid-container {
-  background: orange;
+  background: rgb(221, 206, 178);
   display: flex;
   flex-wrap: wrap;
   padding: 10px;
   border-radius: 8px;
-  justify-content: center;
 }
 
 .item {
-  background: purple;
+  background: rgb(204, 85, 204);
   height: 80px;
   width: 200px;
   margin: 10px;
