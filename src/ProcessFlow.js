@@ -70,16 +70,13 @@ const ProcessFlow = () => {
       }
 
       const line = new LeaderLine(elems[i], elems[i + 1], options);
+      line.hide("none", { duration: 0 });
       lineRefs.current.push(line);
-      line.show("draw", { duration: 3000 });
     }
   };
 
   const adjustLayout = () => {
     if (!containerRef.current || !itemRef.current) return;
-
-    // Thu toàn bộ line
-    lineRefs.current.forEach((line) => line?.hide("fade", { duration: 0 }));
 
     const elems = containerRef.current.querySelectorAll(".item");
     const nTotal = elems.length;
@@ -108,6 +105,18 @@ const ProcessFlow = () => {
         if (index >= nTotal) break;
 
         const elem = elems[index];
+        const startIndexOfRow = row * numCols;
+        const endIndexOfRow = Math.min((row + 1) * numCols, nTotal) - 1;
+
+        elem.style.border = "none";
+
+        // if (index === startIndexOfRow) {
+        //   elem.style.border = "2px solid green";
+        // }
+        // if (index === endIndexOfRow) {
+        //   elem.style.border = "2px solid red";
+        // }
+
         elem.style.marginLeft = "10px";
 
         if (row % 2 === 0) {
@@ -127,27 +136,41 @@ const ProcessFlow = () => {
       }
     }
 
-    // Sau khi layout ổn định, vẽ lại line
-
-    lineRefs.current.forEach((line) => line?.remove());
-    lineRefs.current = [];
     drawLines();
   };
 
   useEffect(() => {
     adjustLayout();
 
-    const handleResize = () => adjustLayout();
+    const handleResize = () => {
+      lineRefs.current.forEach((line) => line?.remove());
+      lineRefs.current = [];
+      adjustLayout();
+      handleShowLine();
+    };
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
       lineRefs.current.forEach((line) => line?.remove());
     };
   }, [items]);
 
+  const handleShowLine = () => {
+    lineRefs.current.forEach((line) => {
+      line?.show("draw", { duration: 1000 });
+    });
+  };
+
+  const handleHideLine = () => {
+    lineRefs.current.forEach((line) => {
+      line?.hide("none", { duration: 0 });
+    });
+  };
+
   return (
     <div className="alternating-container">
+      <button onClick={handleShowLine}>Show</button>
+      <button onClick={handleHideLine}>Hide</button>
       <div ref={containerRef} className="grid-container">
         {items.map((num, index) => (
           <div key={num} ref={index === 0 ? itemRef : null} className="item">
