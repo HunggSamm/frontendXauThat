@@ -10,17 +10,20 @@ function ProcessFlow() {
   const drawLines = () => {
     const container = containerRef.current;
     const svg = svgRef.current;
-    const elements = itemRefs.current;
+    const elements = itemRefs.current.filter((el) => el);
 
     if (!container || !svg || elements.length === 0) return;
 
     svg.innerHTML = `
-    <defs>
-      <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L9,3 z" fill="black" />
-      </marker>
-    </defs>
-  `;
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#374151" />
+        </marker>
+        <marker id="disc" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <circle cx="4" cy="4" r="3" fill="#374151" />
+        </marker>
+      </defs>
+    `;
 
     const containerRect = container.getBoundingClientRect();
     const positions = elements.map((el) => {
@@ -30,33 +33,37 @@ function ProcessFlow() {
         right: rect.right - containerRect.left,
         top: rect.top - containerRect.top,
         bottom: rect.bottom - containerRect.top,
+        centerX: rect.left + rect.width / 2 - containerRect.left,
         centerY: rect.top + rect.height / 2 - containerRect.top,
       };
     });
 
-    const containerWidth = container.offsetWidth;
-    const item = elements[0];
-    const itemStyle = window.getComputedStyle(item);
+    const containerStyles = window.getComputedStyle(container);
+    const containerWidth =
+      container.offsetWidth -
+      parseInt(containerStyles.paddingLeft) -
+      parseInt(containerStyles.paddingRight);
+
+    const firstItem = elements[0];
+    const itemStyles = window.getComputedStyle(firstItem);
     const itemWidth =
-      item.offsetWidth +
-      parseInt(itemStyle.marginLeft) +
-      parseInt(itemStyle.marginRight);
-    const numCols = Math.floor(containerWidth / itemWidth) || 1;
+      firstItem.offsetWidth +
+      parseInt(itemStyles.marginLeft) +
+      parseInt(itemStyles.marginRight);
+
+    const numCols = Math.floor(containerWidth / itemWidth);
 
     for (let i = 0; i < positions.length - 1; i++) {
       const start = positions[i];
       const end = positions[i + 1];
 
-      const isEndOfRow = (i + 1) % numCols === 0;
-      const color = "gray";
+      const currentRow = Math.floor(i / numCols);
+      const nextRow = Math.floor((i + 1) / numCols);
+      const isRowChange = currentRow !== nextRow;
 
-      if (isEndOfRow) {
-        // Vẽ đường cong khi chuyển hàng
-        const row = Math.floor(i / numCols);
-        const isEvenRow = row % 2 === 0;
-
-        const controlOffsetX = 40;
-        const controlOffsetY = 40;
+      if (isRowChange) {
+        const isEvenRow = currentRow % 2 === 0;
+        const controlOffset = 50;
 
         const path = document.createElementNS(
           "http://www.w3.org/2000/svg",
@@ -65,26 +72,24 @@ function ProcessFlow() {
         let d;
 
         if (isEvenRow) {
-          // từ lề phải ô cuối sang lề phải ô đầu hàng tiếp theo
           d = `M ${start.right},${start.centerY}
-     C ${start.right + controlOffsetX},${start.centerY + controlOffsetY},
-       ${end.right + controlOffsetX},${end.centerY - controlOffsetY},
-       ${end.right},${end.centerY}`;
+               C ${start.right + controlOffset},${start.centerY},
+                 ${start.right + controlOffset},${end.centerY},
+                 ${end.right},${end.centerY}`;
         } else {
-          // từ lề trái ô cuối sang lề trái ô đầu hàng tiếp theo
           d = `M ${start.left},${start.centerY}
-     C ${start.left - controlOffsetX},${start.centerY + controlOffsetY},
-       ${end.left - controlOffsetX},${end.centerY - controlOffsetY},
-       ${end.left},${end.centerY}`;
+               C ${start.left - controlOffset},${start.centerY},
+                 ${start.left - controlOffset},${end.centerY},
+                 ${end.left},${end.centerY}`;
         }
 
         path.setAttribute("d", d);
-        path.setAttribute("stroke", color);
+        path.setAttribute("stroke", "#374151");
         path.setAttribute("stroke-width", "2");
         path.setAttribute("fill", "none");
+
         svg.appendChild(path);
       } else {
-        // Vẽ đường thẳng nối cùng hàng
         const line = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "line"
@@ -93,7 +98,7 @@ function ProcessFlow() {
         line.setAttribute("y1", start.centerY);
         line.setAttribute("x2", end.left);
         line.setAttribute("y2", end.centerY);
-        line.setAttribute("stroke", color);
+        line.setAttribute("stroke", "#374151");
         line.setAttribute("stroke-width", "2");
 
         svg.appendChild(line);
@@ -103,31 +108,49 @@ function ProcessFlow() {
 
   const adjustLayout = () => {
     const container = containerRef.current;
-    const elements = itemRefs.current;
+    const elements = itemRefs.current.filter((el) => el);
 
     if (!container || elements.length === 0) return;
 
-    const containerWidth = container.offsetWidth;
-    const item = elements[0];
-    const itemStyle = window.getComputedStyle(item);
-    const itemWidth =
-      item.offsetWidth +
-      parseInt(itemStyle.marginLeft) +
-      parseInt(itemStyle.marginRight);
+    const containerStyles = window.getComputedStyle(container);
+    const containerWidth =
+      container.offsetWidth -
+      parseInt(containerStyles.paddingLeft) -
+      parseInt(containerStyles.paddingRight);
 
-    const numCols = Math.floor(containerWidth / itemWidth) || 1;
+    const firstItem = elements[0];
+    const itemStyles = window.getComputedStyle(firstItem);
+    const itemWidth =
+      firstItem.offsetWidth +
+      parseInt(itemStyles.marginLeft) +
+      parseInt(itemStyles.marginRight);
+
+    const numCols = Math.min(
+      Math.floor(containerWidth / itemWidth),
+      items.length
+    );
     const numRows = Math.ceil(items.length / numCols);
 
     for (let col = 0; col < numCols; col++) {
       for (let row = 0; row < numRows; row++) {
-        const index = row * numCols + col;
-        if (index >= items.length) continue;
+        const index = col + row * numCols;
+        if (index >= items.length) break;
 
         const el = elements[index];
+
         if (row % 2 === 0) {
           el.style.order = index;
         } else {
-          el.style.order = row * numCols + (numCols - col - 1);
+          el.style.order = numCols - col - 1 + row * numCols;
+
+          if (
+            row === numRows - 1 &&
+            index === items.length - 1 &&
+            col < numCols - 1
+          ) {
+            const extraMargin = (numCols * numRows - items.length) * itemWidth;
+            el.style.marginLeft = `${extraMargin + 10}px`;
+          }
         }
       }
     }
