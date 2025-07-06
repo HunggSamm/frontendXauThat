@@ -1,137 +1,133 @@
-import React, { useState, useEffect, useRef } from "react";
-import LeaderLine from "react-leader-line";
+import React, { useEffect, useRef, useState } from "react";
 import "./ProcessFlow.scss";
 
-const ProcessFlow = () => {
+function ProcessFlow() {
   const containerRef = useRef(null);
-  const itemRef = useRef(null);
-  const lineRefs = useRef([]);
-  const [items, setItems] = useState(
-    Array.from({ length: 24 }, (_, i) => i + 1)
-  );
+  const itemRefs = useRef([]);
+  const svgRef = useRef(null);
+  const [items] = useState(Array.from({ length: 24 }, (_, i) => i + 1));
 
   const drawLines = () => {
-    lineRefs.current.forEach((line) => line?.remove());
-    lineRefs.current = [];
+    const container = containerRef.current;
+    const svg = svgRef.current;
+    const elements = itemRefs.current;
 
-    const elems = containerRef.current.querySelectorAll(".item");
-    const nTotal = elems.length;
+    if (!container || !svg || elements.length === 0) return;
 
-    const itemStyle = window.getComputedStyle(itemRef.current);
+    svg.innerHTML = `
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="black" />
+      </marker>
+    </defs>
+  `;
+
+    const containerRect = container.getBoundingClientRect();
+    const positions = elements.map((el) => {
+      const rect = el.getBoundingClientRect();
+      return {
+        left: rect.left - containerRect.left,
+        right: rect.right - containerRect.left,
+        top: rect.top - containerRect.top,
+        bottom: rect.bottom - containerRect.top,
+        centerY: rect.top + rect.height / 2 - containerRect.top,
+      };
+    });
+
+    const containerWidth = container.offsetWidth;
+    const item = elements[0];
+    const itemStyle = window.getComputedStyle(item);
     const itemWidth =
-      itemRef.current.offsetWidth +
+      item.offsetWidth +
       parseInt(itemStyle.marginLeft) +
       parseInt(itemStyle.marginRight);
+    const numCols = Math.floor(containerWidth / itemWidth) || 1;
 
-    const containerStyle = window.getComputedStyle(containerRef.current);
-    const containerWidth = containerRef.current.offsetWidth;
-    const containerPadding =
-      parseInt(containerStyle.paddingLeft) +
-      parseInt(containerStyle.paddingRight);
+    for (let i = 0; i < positions.length - 1; i++) {
+      const start = positions[i];
+      const end = positions[i + 1];
 
-    const numCols = Math.min(
-      Math.floor((containerWidth - containerPadding) / itemWidth),
-      nTotal
-    );
+      const isEndOfRow = (i + 1) % numCols === 0;
+      const color = "gray";
 
-    for (let i = 0; i < nTotal - 1; i++) {
-      const row1 = Math.floor(i / numCols);
-      const row2 = Math.floor((i + 1) / numCols);
+      if (isEndOfRow) {
+        // Vẽ đường cong khi chuyển hàng
+        const row = Math.floor(i / numCols);
+        const isEvenRow = row % 2 === 0;
 
-      let options = {
-        color: "black",
-        path: "straight",
-        endPlug: "arrow3",
-        startPlug: "disc",
-      };
+        const controlOffsetX = 40;
+        const controlOffsetY = 40;
 
-      const isEndOfRow = (i + 1) % numCols === 0 || i === nTotal - 1;
+        const path = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path"
+        );
+        let d;
 
-      if (row1 !== row2) {
-        if (row1 % 2 === 0) {
-          options = {
-            color: "black",
-            path: "fluid",
-            startSocket: "right",
-            endSocket: "right",
-            startSocketGravity: [100, 0],
-            endSocketGravity: [100, 0],
-          };
+        if (isEvenRow) {
+          // từ lề phải ô cuối sang lề phải ô đầu hàng tiếp theo
+          d = `M ${start.right},${start.centerY}
+     C ${start.right + controlOffsetX},${start.centerY + controlOffsetY},
+       ${end.right + controlOffsetX},${end.centerY - controlOffsetY},
+       ${end.right},${end.centerY}`;
         } else {
-          options = {
-            color: "black",
-            path: "fluid",
-            startSocket: "left",
-            endSocket: "left",
-            startSocketGravity: [-100, 0],
-            endSocketGravity: [-100, 0],
-          };
+          // từ lề trái ô cuối sang lề trái ô đầu hàng tiếp theo
+          d = `M ${start.left},${start.centerY}
+     C ${start.left - controlOffsetX},${start.centerY + controlOffsetY},
+       ${end.left - controlOffsetX},${end.centerY - controlOffsetY},
+       ${end.left},${end.centerY}`;
         }
-      }
 
-      const line = new LeaderLine(elems[i], elems[i + 1], options);
-      line.hide("none", { duration: 0 });
-      lineRefs.current.push(line);
+        path.setAttribute("d", d);
+        path.setAttribute("stroke", color);
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("fill", "none");
+        svg.appendChild(path);
+      } else {
+        // Vẽ đường thẳng nối cùng hàng
+        const line = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "line"
+        );
+        line.setAttribute("x1", start.right);
+        line.setAttribute("y1", start.centerY);
+        line.setAttribute("x2", end.left);
+        line.setAttribute("y2", end.centerY);
+        line.setAttribute("stroke", color);
+        line.setAttribute("stroke-width", "2");
+
+        svg.appendChild(line);
+      }
     }
   };
 
   const adjustLayout = () => {
-    if (!containerRef.current || !itemRef.current) return;
+    const container = containerRef.current;
+    const elements = itemRefs.current;
 
-    const elems = containerRef.current.querySelectorAll(".item");
-    const nTotal = elems.length;
+    if (!container || elements.length === 0) return;
 
-    const itemStyle = window.getComputedStyle(itemRef.current);
+    const containerWidth = container.offsetWidth;
+    const item = elements[0];
+    const itemStyle = window.getComputedStyle(item);
     const itemWidth =
-      itemRef.current.offsetWidth +
+      item.offsetWidth +
       parseInt(itemStyle.marginLeft) +
       parseInt(itemStyle.marginRight);
 
-    const containerStyle = window.getComputedStyle(containerRef.current);
-    const containerWidth = containerRef.current.offsetWidth;
-    const containerPadding =
-      parseInt(containerStyle.paddingLeft) +
-      parseInt(containerStyle.paddingRight);
-
-    const numCols = Math.min(
-      Math.floor((containerWidth - containerPadding) / itemWidth),
-      nTotal
-    );
-    const numRows = Math.ceil(nTotal / numCols);
+    const numCols = Math.floor(containerWidth / itemWidth) || 1;
+    const numRows = Math.ceil(items.length / numCols);
 
     for (let col = 0; col < numCols; col++) {
       for (let row = 0; row < numRows; row++) {
-        const index = col + row * numCols;
-        if (index >= nTotal) break;
+        const index = row * numCols + col;
+        if (index >= items.length) continue;
 
-        const elem = elems[index];
-        const startIndexOfRow = row * numCols;
-        const endIndexOfRow = Math.min((row + 1) * numCols, nTotal) - 1;
-
-        elem.style.border = "none";
-
-        // if (index === startIndexOfRow) {
-        //   elem.style.border = "2px solid green";
-        // }
-        // if (index === endIndexOfRow) {
-        //   elem.style.border = "2px solid red";
-        // }
-
-        elem.style.marginLeft = "10px";
-
+        const el = elements[index];
         if (row % 2 === 0) {
-          elem.style.order = index;
+          el.style.order = index;
         } else {
-          elem.style.order = numCols - col - 1 + row * numCols;
-
-          if (
-            row === numRows - 1 &&
-            index === nTotal - 1 &&
-            col < numCols - 1
-          ) {
-            elem.style.marginLeft =
-              (numCols * numRows - nTotal) * itemWidth + 10 + "px";
-          }
+          el.style.order = row * numCols + (numCols - col - 1);
         }
       }
     }
@@ -140,46 +136,38 @@ const ProcessFlow = () => {
   };
 
   useEffect(() => {
-    adjustLayout();
-
     const handleResize = () => {
-      lineRefs.current.forEach((line) => line?.remove());
-      lineRefs.current = [];
       adjustLayout();
-      handleShowLine();
     };
+
+    const timeout = setTimeout(() => {
+      adjustLayout();
+    }, 100);
+
     window.addEventListener("resize", handleResize);
     return () => {
+      clearTimeout(timeout);
       window.removeEventListener("resize", handleResize);
-      lineRefs.current.forEach((line) => line?.remove());
     };
-  }, [items]);
-
-  const handleShowLine = () => {
-    lineRefs.current.forEach((line) => {
-      line?.show("draw", { duration: 1000 });
-    });
-  };
-
-  const handleHideLine = () => {
-    lineRefs.current.forEach((line) => {
-      line?.hide("none", { duration: 0 });
-    });
-  };
+  }, []);
 
   return (
-    <div className="alternating-container">
-      <button onClick={handleShowLine}>Show</button>
-      <button onClick={handleHideLine}>Hide</button>
+    <div className="process-container">
       <div ref={containerRef} className="grid-container">
+        <svg ref={svgRef} className="svg-overlay"></svg>
+
         {items.map((num, index) => (
-          <div key={num} ref={index === 0 ? itemRef : null} className="item">
+          <div
+            key={num}
+            ref={(el) => (itemRefs.current[index] = el)}
+            className="grid-item"
+          >
             {num}
           </div>
         ))}
       </div>
     </div>
   );
-};
+}
 
 export default ProcessFlow;
